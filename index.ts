@@ -30,8 +30,24 @@ export default class Fanduel {
 
         this.makeRequest("https://api.fanduel.com/fixture-lists/" + slateId)
             .then(requestResult => {
-                console.log(JSON.stringify(requestResult, null, 4));
-            });
+                const intermediateDetails : any = _.extend(requestResult.fixture_lists[0], {games: requestResult.fixtures});
+                intermediateDetails.games = (<any[]> intermediateDetails.games).map(f => {
+                   f.away_team = {team: f["away_team"]["team"]["_members"][0],
+                                  score: f["away_team"]["score"],
+                                  sport_specific: f["away_team"]["sport_specific"]};
+
+                    f.home_team = {team: f["home_team"]["team"]["_members"][0],
+                                   score: f["home_team"]["score"],
+                                   sport_specific: f["home_team"]["sport_specific"]};
+
+
+                   return f;
+                });
+
+                result.resolve(<SlateDetails> intermediateDetails);
+            })
+            .catch(result.reject)
+        ;
 
         return result.promise;
     }

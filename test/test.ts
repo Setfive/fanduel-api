@@ -48,10 +48,16 @@ describe("info", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
-           fd.getDetailsForSlateId(result[0].id).then(slateDetails => {
-               expect(slateDetails).to.null("null");
+           fd.getDetailsForSlateId(result[0].id)
+             .then(slateDetails => {
+               expect(slateDetails).to.be.any;
                df.resolve(true);
-           });
+           })
+             .catch(reason => {
+                 console.log(reason);
+                 expect(false).to.equal(true);
+             })
+           ;
         });
 
         return df.promise;
