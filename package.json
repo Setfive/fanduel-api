@@ -1,0 +1,23 @@
+{
+  "name": "ts-fd-api",
+  "version": "1.0.0",
+  "description": "Provides a nodejs interface to Fanduel.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha --timeout 30000 -r ts-node/register test/*.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/chai": "^3.5.2",
+    "@types/lodash": "^4.14.63",
+    "@types/mocha": "^2.2.41",
+    "@types/q": "^1.0.0",
+    "@types/request": "0.0.42",
+    "chai": "^3.5.0",
+    "lodash": "^4.17.4",
+    "mocha": "^3.3.0",
+    "q": "^1.5.0",
+    "request": "^2.81.0"
+  }
+}
