@@ -133,7 +133,7 @@ export default class Fanduel {
                 this.defaultOptions["headers"]["Authorization"] = "Basic " + this.userInfo.apiClientId;
 
                 this.debug("Set userdata : " + JSON.stringify(this.userInfo, null, 4));
-                
+
                 df.resolve();
             }, function(){
                 df.reject("Error fetching user data");
