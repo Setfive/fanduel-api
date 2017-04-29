@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as request from "request";
 import * as Q from "q";
-import {FanduelConfig, IDefaultOptions, Slate, UserInfo} from "./models";
+import {FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo} from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {log} from "util";
 
@@ -23,6 +23,17 @@ export default class Fanduel {
 
     constructor(config : FanduelConfig){
         this.config = config;
+    }
+
+    public getDetailsForSlateId(slateId : string) : Q.Promise<SlateDetails> {
+        const result : Q.Deferred<SlateDetails> = Q.defer<SlateDetails>();
+
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slateId)
+            .then(requestResult => {
+                console.log(JSON.stringify(requestResult, null, 4));
+            });
+
+        return result.promise;
     }
 
     public getAvailableSlates() : Q.Promise<Slate[]> {

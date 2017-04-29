@@ -3,6 +3,7 @@ import {FanduelConfig} from "../models";
 import Fanduel from "../index";
 import { expect } from 'chai';
 import {dirname} from "path";
+import * as Q from "q";
 
 console.log( dirname(__filename) + "../auth.json" );
 
@@ -37,10 +38,23 @@ before(() => {
 
 describe("info", () => {
 
-    it("slates", () => {
+    xit("slates", () => {
         return fd.getAvailableSlates().then(result => {
            expect(result).to.be.instanceof(Array);
         });
+    });
+
+    it("slate details", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getAvailableSlates().then(result => {
+           fd.getDetailsForSlateId(result[0].id).then(slateDetails => {
+               expect(slateDetails).to.null("null");
+               df.resolve(true);
+           });
+        });
+
+        return df.promise;
     });
 
 });
