@@ -27,6 +27,20 @@ describe("auth", () => {
                   });
     });
 
-    
+});
+
+let fd : Fanduel;
+
+before(() => {
+    fd = new Fanduel(<FanduelConfig> auth);
+});
+
+describe("info", () => {
+
+    it("slates", () => {
+        return fd.getAvailableSlates().then(result => {
+           expect(result).to.be.instanceof(Array);
+        });
+    });
 
 });

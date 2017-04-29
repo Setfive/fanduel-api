@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as request from "request";
 import * as Q from "q";
-import {FanduelConfig, IDefaultOptions, UserInfo} from "./models";
+import {FanduelConfig, IDefaultOptions, Slate, UserInfo} from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {log} from "util";
 
@@ -23,6 +23,24 @@ export default class Fanduel {
 
     constructor(config : FanduelConfig){
         this.config = config;
+    }
+
+    public getAvailableSlates() : Q.Promise<Slate[]> {
+        const result : Q.Deferred<Slate[]> = Q.defer<Slate[]>();
+
+        this.makeRequest("https://api.fanduel.com/fixture-lists")
+            .then(requestResult => {
+                const slateResult = (<any[]>requestResult.fixture_lists).map(f => {
+                    f.contests = f.contests.open;
+                    return <Slate> f;
+                });
+
+                result.resolve(slateResult);
+            })
+            .catch(result.reject)
+        ;
+
+        return result.promise;
     }
 
     private processXAuthToken(xAuthCookie : string) : Q.Promise<boolean> {
