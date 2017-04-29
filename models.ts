@@ -56,8 +56,8 @@ export class Slate {
     sport : string;
     _url : string;
     status : SlateStatus;
-    contests : SlateContest;
-    players : Linked;
+    contests? : SlateContest;
+    players? : Linked;
 }
 
 export class SlateDetails {
@@ -191,4 +191,68 @@ export class RosterPosition {
     abbr : string;
     full : string;
     valid_player_positions : string[];
+}
+
+export class ContestResult {
+    contests : Contest[];
+    entry_fees : number[];
+    fixture_lists : Slate[];
+    contest_types : ContestType[];
+    contest_sub_types : ContestSubType[];
+}
+
+export class ContestSubType {
+    id : string;
+    label : string;
+}
+
+export class ContestType {
+    id : string;
+    label : string;
+    description : string;
+}
+
+export class ContestPrize {
+    total : number;
+    count : number;
+    summary : string;
+}
+
+export class ContstSize {
+    min : number;
+    max : number;
+}
+
+export class ContestH2HEntrants {
+    _members : string[];
+}
+
+export class ContestH2H {
+    entrants : ContestH2HEntrants;
+}
+
+export class Membered {
+    _members : string[];
+}
+
+export class Contest {
+    id : string;
+    open_count : number;
+    restricted : boolean;
+    entries : Linked;
+    display_priority : number;
+    prizes : ContestPrize;
+    name : string;
+    _url : string;
+    levels : any[];
+    user_created : boolean;
+    features : any;
+    size : ContstSize;
+    h2h : ContestH2H;
+    guaranteed : boolean;
+    entry_fee_fdp : number;
+    entry_fee : number;
+    pinned : boolean;
+    max_entries_per_user : number;
+    type : Membered;
 }

@@ -44,7 +44,7 @@ describe("info", () => {
         });
     });
 
-    it("slate details", () => {
+    xit("slate details", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -58,6 +58,25 @@ describe("info", () => {
                  expect(false).to.equal(true);
              })
            ;
+        });
+
+        return df.promise;
+    });
+
+    it("slate contests", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getAvailableSlates().then(result => {
+            fd.getAvailableContestsForSlateId(result[0].id)
+              .then(contestDetails => {
+                  console.log(contestDetails);
+                  expect(contestDetails).to.be.any;
+                  df.resolve(true);
+              })
+              .catch(reason => {
+                  console.log(reason);
+                  expect(false).to.equal(true);
+              });
         });
 
         return df.promise;

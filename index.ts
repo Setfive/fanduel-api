@@ -1,7 +1,8 @@
+import * as fs from "fs";
 import * as _ from "lodash";
 import * as request from "request";
 import * as Q from "q";
-import {FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo} from "./models";
+import {FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult} from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {log} from "util";
 
@@ -23,6 +24,19 @@ export default class Fanduel {
 
     constructor(config : FanduelConfig){
         this.config = config;
+    }
+
+    public getAvailableContestsForSlateId(slateId : string) : Q.Promise<ContestResult> {
+        const result : Q.Deferred<ContestResult> = Q.defer<ContestResult>();
+
+        this.makeRequest("https://api.fanduel.com/contests?fixture_list=" + slateId + "&include_restricted=false")
+            .then(requestResult => {
+                const contestResult = <ContestResult> requestResult;
+                contestResult.entry_fees = requestResult._meta.entry_fees;
+                result.resolve(contestResult);
+        });
+
+        return result.promise;
     }
 
     public getDetailsForSlateId(slateId : string) : Q.Promise<SlateDetails> {
