@@ -1,11 +1,9 @@
 import * as fs from "fs";
-import {FanduelConfig} from "../models";
+import {FanduelConfig, Lineup, Sport} from "../models";
 import Fanduel from "../index";
 import { expect } from 'chai';
 import {dirname} from "path";
 import * as Q from "q";
-
-console.log( dirname(__filename) + "../auth.json" );
 
 const auth = JSON.parse(fs.readFileSync(dirname(__filename) + "/../auth.json", "utf8"));
 
@@ -50,8 +48,8 @@ describe("info", () => {
         fd.getAvailableSlates().then(result => {
            fd.getDetailsForSlateId(result[0].id)
              .then(slateDetails => {
-               expect(slateDetails).to.be.any;
-               df.resolve(true);
+                 expect(slateDetails).to.be.any;
+                 df.resolve(true);
            })
              .catch(reason => {
                  console.log(reason);
@@ -63,13 +61,12 @@ describe("info", () => {
         return df.promise;
     });
 
-    it("slate contests", () => {
+    xit("slate contests", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
             fd.getAvailableContestsForSlateId(result[0].id)
               .then(contestDetails => {
-                  console.log(contestDetails);
                   expect(contestDetails).to.be.any;
                   df.resolve(true);
               })
@@ -77,6 +74,43 @@ describe("info", () => {
                   console.log(reason);
                   expect(false).to.equal(true);
               });
+        });
+
+        return df.promise;
+    });
+
+    xit("players for slate", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getAvailableSlates().then(result => {
+            fd.getPlayersForSlate(result[0]).then(slatePlayers => {
+                expect(slatePlayers).to.be.instanceof(Array);
+            });
+        });
+
+        return df.promise;
+    });
+
+    xit("games for slate", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getAvailableSlates().then(result => {
+            fd.getGamesForSlate(result[0]).then(slateGames => {
+                expect(slateGames).to.be.instanceof(Array);
+            });
+        });
+
+        return df.promise;
+    });
+
+    it("generate valid lineup", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getAvailableSlates().then(result => {
+            fd.createValidLineupForSlate(result[0]).then(lineup => {
+                console.log(lineup);
+                expect(lineup).to.be.instanceof(Lineup);
+            });
         });
 
         return df.promise;

@@ -2,9 +2,13 @@ import * as fs from "fs";
 import * as _ from "lodash";
 import * as request from "request";
 import * as Q from "q";
-import {FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult} from "./models";
+import {
+    FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
+    Player, SlateGame, Lineup
+} from "./models";
 import {CookieJar, RequestResponse} from "request";
-import {log} from "util";
+import {error, log} from "util";
+import {LineupGenerator} from "./LineupGenerator";
 
 export default class Fanduel {
 
@@ -82,6 +86,61 @@ export default class Fanduel {
         ;
 
         return result.promise;
+    }
+
+    // TODO: This isnt tested
+    public getUpcomingRosters() : Q.Promise<any> {
+        const result : Q.Deferred<Slate[]> = Q.defer<Slate[]>();
+
+        this.makeRequest("https://api.fanduel.com/users/" + this.userInfo.id + "/rosters?page=1&page_size=1000&status=upcoming")
+            .then(requestResult => {
+                result.resolve(<any> requestResult);
+            })
+            .catch(result.reject)
+        ;
+
+        return result.promise;
+    }
+
+    public getGamesForSlate(slate : Slate) : Q.Promise<SlateGame[]> {
+        const result : Q.Deferred<SlateGame[]> = Q.defer<SlateGame[]>();
+
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slate.id + "/players")
+            .then(requestResult => {
+                result.resolve(<SlateGame[]> requestResult.fixtures);
+            })
+            .catch(result.reject)
+        ;
+
+        return result.promise;
+    }
+
+    public getPlayersForSlate(slate : Slate) : Q.Promise<Player[]> {
+        const result : Q.Deferred<Player[]> = Q.defer<Player[]>();
+
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slate.id + "/players")
+            .then(requestResult => {
+                result.resolve(<Player[]> requestResult.players);
+            })
+            .catch(result.reject)
+        ;
+
+        return result.promise;
+    }
+
+    public createValidLineupForSlate(slate : Slate) : Q.Promise<Lineup> {
+        const finalLineupDf : Q.Deferred<Lineup> = Q.defer<Lineup>();
+        const players = this.getPlayersForSlate(slate);
+        const slateDetails = this.getDetailsForSlateId(slate.id);
+
+        Q.all([slateDetails, players]).then((result) => {
+            const generator = new LineupGenerator(result[0], result[1]);
+            generator.createValidLineup().then(lineupResult => {
+                finalLineupDf.resolve(lineupResult);
+            });
+        });
+
+        return finalLineupDf.promise;
     }
 
     private processXAuthToken(xAuthCookie : string) : Q.Promise<boolean> {
@@ -233,7 +292,12 @@ export default class Fanduel {
     private makeRequest(url : string, options : any = {}) : Q.Promise<any> {
         const result = Q.defer<string>();
         this.makeRawRequest(url, options)
-            .then((response : any) => result.resolve(JSON.parse(response)));
+            .then((response : any) => result.resolve(JSON.parse(response)))
+            .catch(error => {
+               console.log(error);
+               result.reject(error);
+            });
+        ;
         return result.promise;
     }
 

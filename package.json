@@ -4,7 +4,7 @@
   "description": "Provides a nodejs interface to Fanduel.com",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --timeout 30000 -r ts-node/register test/*.ts"
+    "test": "./node_modules/mocha/bin/mocha --timeout 60000 -r ts-node/register test/*.ts"
   },
   "author": "",
   "license": "ISC",

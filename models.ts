@@ -1,4 +1,5 @@
 import {CookieJar, Headers} from "request";
+import * as _ from "lodash";
 
 export class FanduelConfig {
     private _username : string;
@@ -255,4 +256,101 @@ export class Contest {
     pinned : boolean;
     max_entries_per_user : number;
     type : Membered;
+}
+
+export class Sport {
+    public static NFL = "NFL";
+    public static NBA = "NBA";
+    public static MLB = "MLB";
+    public static NHL = "NHL";
+    public static EPL = "EPL";
+    public static PGA = "PGA";
+    public static UCL = "UCL";
+    public static WNBA = "WNBA";
+
+    private which : string;
+
+    constructor(which : string){
+        this.which = which;
+    }
+
+    public toString() : string {
+        return this.which;
+    }
+}
+
+export class PlayerImage {
+    default : PlayerImageDetails;
+}
+
+export class PlayerImageDetails {
+    height : number;
+    width : number;
+    url : string;
+}
+
+export class PlayerNews {
+    latest : string;
+}
+
+export class PlayerPositionStat {
+    fppg : number;
+    player_position : string;
+    roster_position : string;
+}
+
+export class Player {
+    first_name : string;
+    fppg : number;
+    id : string;
+    injured : boolean;
+    injury_details : string;
+    injury_status : string;
+    jersey_number : number;
+    last_name : string;
+    played : number;
+    player_card_url : string;
+    position : string;
+    probable_pitcher : boolean;
+    removed : boolean;
+    salary : number;
+    sport_specific : any;
+    starting_order : number;
+    swappable : boolean;
+    images : PlayerImage;
+    fixture : Fixture;
+    news : PlayerNews;
+    roster_position_stats : PlayerPositionStat[];
+    team : Fixture;
+}
+
+export class Lineup {
+    roster : LineupPlayerPosition[] = [];
+    projectedFanduelPoints : number = 0;
+    remainingSalary : number;
+    isFull : boolean;
+    isPossibleRoster : boolean;
+    isValidRoster : boolean;
+
+    constructor(slateDetails : SlateDetails){
+        this.roster = slateDetails.roster_positions.map(f => {return {position: f.abbr, player: null};});
+        this.remainingSalary = slateDetails.salary_cap;
+    }
+
+    clone() : Lineup {
+        const l = _.cloneDeep(this);
+        l.isFull = null;
+        l.isPossibleRoster = null;
+        l.isValidRoster = null;
+        return l;
+    }
+}
+
+export class LineupPlayer {
+    id : string;
+}
+
+export class LineupPlayerPosition {
+    position : string;
+    player : Player;
 }
