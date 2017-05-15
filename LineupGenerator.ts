@@ -30,7 +30,7 @@ export class LineupGenerator {
         this.players = players;
     }
 
-    public createValidLineup() : Q.Promise<Lineup> {
+    public createValidLineup(timeout : number = 10000) : Q.Promise<Lineup> {
         this.queuedLineups = [];
         this.validLineups = [];
         this.lineupDeferred = Q.defer<Lineup>();
@@ -50,6 +50,13 @@ export class LineupGenerator {
 
         this.processQueuedLineups();
 
+        setTimeout(() => {
+            const bestLineup = this.validLineups.length ? this.validLineups[0] : null;
+            this.isHalted = true;
+            console.log(bestLineup);
+            this.lineupDeferred.resolve(bestLineup);
+        }, timeout);
+
         return this.lineupDeferred.promise;
     }
 
@@ -63,7 +70,7 @@ export class LineupGenerator {
         this.searchValidLineupsForRoster.call(this, args);
 
         if (this.queuedLineups.length) {
-            this.queuedLineups = _.shuffle(this.queuedLineups);
+            // this.queuedLineups = _.shuffle(this.queuedLineups);
             setImmediate(this.processQueuedLineups.bind(this));
         } else {
             this.lineupDeferred.resolve();
@@ -88,9 +95,25 @@ export class LineupGenerator {
         const playerToAdd = this.groupedPlayers[targetPosition.position][ searchParams.searchIndex[targetPosition.position] ];
         const updatedRoster = this.addPlayerToRoster(playerToAdd, searchParams.currentLineup);
 
-        const nextSearch = _.extend({}, searchParams);
-        nextSearch.searchIndex[targetPosition.position] += 1;
-        this.queuedLineups.push(nextSearch);
+        if(updatedRoster.isValidRoster){
+            this.sortAndTrimLineups(updatedRoster);
+            return;
+        }
+
+        if(updatedRoster.isPossibleRoster) {
+            const nextSearch = _.extend({}, searchParams);
+            nextSearch.searchIndex[targetPosition.position] += 1;
+            this.queuedLineups.push(nextSearch);
+        }
+
+        searchParams.currentLineup = updatedRoster;
+        this.searchValidLineupsForRoster(searchParams);
+    }
+
+    public sortAndTrimLineups(lineup: Lineup): void {
+        this.validLineups.push(lineup);
+        this.validLineups = _.sortBy(this.validLineups, f => f.projectedFanduelPoints).reverse();
+        this.validLineups = this.validLineups.slice(0, 10);
     }
 
     public addPlayerToRoster(playerToAdd : Player, lineup : Lineup) : Lineup {

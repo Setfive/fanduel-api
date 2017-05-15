@@ -108,8 +108,8 @@ describe("info", () => {
 
         fd.getAvailableSlates().then(result => {
             fd.createValidLineupForSlate(result[0]).then(lineup => {
-                console.log(lineup);
                 expect(lineup).to.be.instanceof(Lineup);
+                df.resolve(true);
             });
         });
 
