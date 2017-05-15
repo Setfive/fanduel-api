@@ -53,7 +53,6 @@ export class LineupGenerator {
         setTimeout(() => {
             const bestLineup = this.validLineups.length ? this.validLineups[0] : null;
             this.isHalted = true;
-            console.log(bestLineup);
             this.lineupDeferred.resolve(bestLineup);
         }, timeout);
 

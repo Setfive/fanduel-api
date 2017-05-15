@@ -354,3 +354,41 @@ export class LineupPlayerPosition {
     position : string;
     player : Player;
 }
+
+export class ContestEntry {
+    id : string;
+    _url : string;
+}
+
+export class RosterTeam {
+    name : string;
+    colors : any;
+    full_name : string;
+    id : string;
+    city : string;
+    code : string;
+}
+
+export class UpcomingRosterRoster {
+    name : string;
+    prize_total : number;
+    id : string;
+    grouped_entries : any;
+    entries : any;
+    stake_total : number;
+    last_used : string;
+    fixture_list : Fixture;
+    lineup_share_url : string;
+    lineup : Lineup;
+    score : number;
+    _url : string;
+    ppr : number;
+}
+
+export class UpcomingRoster {
+    rosters : UpcomingRosterRoster[];
+    players : Player[];
+    fixtures : SlateGame[];
+    fixture_lists : Slate[];
+    teams : RosterTeam[];
+}

@@ -4,7 +4,7 @@ import * as request from "request";
 import * as Q from "q";
 import {
     FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
-    Player, SlateGame, Lineup
+    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster
 } from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {error, log} from "util";
@@ -30,10 +30,10 @@ export default class Fanduel {
         this.config = config;
     }
 
-    public getAvailableContestsForSlateId(slateId : string) : Q.Promise<ContestResult> {
+    public getAvailableContestsForSlateId(slate : Slate) : Q.Promise<ContestResult> {
         const result : Q.Deferred<ContestResult> = Q.defer<ContestResult>();
 
-        this.makeRequest("https://api.fanduel.com/contests?fixture_list=" + slateId + "&include_restricted=false")
+        this.makeRequest("https://api.fanduel.com/contests?fixture_list=" + slate.id + "&include_restricted=false")
             .then(requestResult => {
                 const contestResult = <ContestResult> requestResult;
                 contestResult.entry_fees = requestResult._meta.entry_fees;
@@ -43,10 +43,10 @@ export default class Fanduel {
         return result.promise;
     }
 
-    public getDetailsForSlateId(slateId : string) : Q.Promise<SlateDetails> {
+    public getDetailsForSlateId(slate : Slate) : Q.Promise<SlateDetails> {
         const result : Q.Deferred<SlateDetails> = Q.defer<SlateDetails>();
 
-        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slateId)
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slate.id)
             .then(requestResult => {
                 const intermediateDetails : any = _.extend(requestResult.fixture_lists[0], {games: requestResult.fixtures});
                 intermediateDetails.games = (<any[]> intermediateDetails.games).map(f => {
@@ -88,16 +88,18 @@ export default class Fanduel {
         return result.promise;
     }
 
-    // TODO: This isnt tested
-    public getUpcomingRosters() : Q.Promise<any> {
-        const result : Q.Deferred<Slate[]> = Q.defer<Slate[]>();
+    public getUpcomingRosters() : Q.Promise<UpcomingRoster> {
+        const result : Q.Deferred<UpcomingRoster> = Q.defer<UpcomingRoster>();
 
-        this.makeRequest("https://api.fanduel.com/users/" + this.userInfo.id + "/rosters?page=1&page_size=1000&status=upcoming")
-            .then(requestResult => {
-                result.resolve(<any> requestResult);
-            })
-            .catch(result.reject)
-        ;
+        this.login().then(() => {
+            this.makeRequest("https://api.fanduel.com/users/"
+                                + this.userInfo.id + "/rosters?page=1&page_size=1000&status=upcoming")
+                .then(requestResult => {
+                    result.resolve(<any> requestResult);
+                })
+                .catch(result.reject)
+            ;
+        });
 
         return result.promise;
     }
@@ -131,7 +133,7 @@ export default class Fanduel {
     public createValidLineupForSlate(slate : Slate) : Q.Promise<Lineup> {
         const finalLineupDf : Q.Deferred<Lineup> = Q.defer<Lineup>();
         const players = this.getPlayersForSlate(slate);
-        const slateDetails = this.getDetailsForSlateId(slate.id);
+        const slateDetails = this.getDetailsForSlateId(slate);
 
         Q.all([slateDetails, players]).then((result) => {
             const generator = new LineupGenerator(result[0], result[1]);
@@ -141,6 +143,42 @@ export default class Fanduel {
         });
 
         return finalLineupDf.promise;
+    }
+
+    public createEntryForContest(slate : Slate, contest : Contest, lineup : Lineup) : Q.Promise<ContestEntry[]> {
+        return this.rosterRequest(slate, contest.id, lineup, false);
+    }
+
+    private rosterRequest(slate : Slate, contestId : string, lineup : Lineup, isUpdate : boolean) : Q.Promise<ContestEntry[]> {
+
+        let url = "";
+        let method = "";
+
+        if(isUpdate){
+            url = "https://api.fanduel.com/entries/" + contestId;
+            method = "PUT";
+        }else{
+            url = "https://api.fanduel.com/contests/" + contestId + "/entries";
+            method = "POST";
+        }
+
+        const roster = lineup.roster.map(f => { return {position: f.position, player: {id: f.player.id}};});
+        const requestBody = {
+            "entries": [{
+                "entry_fee": {"currency": "usd"},
+                "roster": {"lineup": roster}
+            }]
+        };
+
+        const body = JSON.stringify(requestBody);
+        const options = _.extend({}, this.defaultOptions, {method: method, body: body});
+        options.headers["Content-Type"] = "application/json;charset=utf-8";
+
+        const df = Q.defer<ContestEntry[]>();
+
+        this.makeRequest(url, options).then(result => { df.resolve(result.entries); });
+
+        return df.promise;
     }
 
     private processXAuthToken(xAuthCookie : string) : Q.Promise<boolean> {
