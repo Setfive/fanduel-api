@@ -95,7 +95,9 @@ export default class Fanduel {
             this.makeRequest("https://api.fanduel.com/users/"
                                 + this.userInfo.id + "/rosters?page=1&page_size=1000&status=upcoming")
                 .then(requestResult => {
-                    result.resolve(<any> requestResult);
+                    const up = new UpcomingRoster();
+                    _.assignIn(up, requestResult);
+                    result.resolve(up);
                 })
                 .catch(result.reject)
             ;

@@ -125,18 +125,21 @@ describe("lineups", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
-            const slate = result[0];
+            const slate = result[1];
 
             const autoLineup = fd.createValidLineupForSlate(slate);
             const contestResult = fd.getAvailableContestsForSlateId(slate);
 
-            Q.all([contestResult, autoLineup]).then(results => {
+            Q.all([contestResult, autoLineup])
+              .then(results => {
+
                 const contest = _.find(results[0].contests, c => c.entry_fee == 1);
                 fd.createEntryForContest(slate, contest, results[1]).then(createdContests => {
                     expect(createdContests).to.be.instanceof(Array);
                     df.resolve(true);
                 });
-            });
+            })
+            .catch(e => console.log(e));
 
         });
 
