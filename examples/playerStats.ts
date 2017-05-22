@@ -26,6 +26,16 @@ fd.getAvailableSlates().then(slates => {
 
        const positions = _.uniq(playerList.map(f => f.position));
        console.log("Slate positions: " + positions.join(", "));
+
+       console.log("Average salaries:");
+       positions.forEach(pos => {
+           const salaries = playerList.filter(f => f.position == pos).map(f => f.salary);
+           const sumSalary = _.reduce(salaries, (total, i) => i + total, 0);
+
+           console.log(pos + " $" + (sumSalary / salaries.length).toFixed(1));
+       });
+
+       process.exit(0);
    });
 
 });
