@@ -5,11 +5,11 @@ import * as Q from "q";
 import * as WebSocket from "ws";
 import {
     FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
-    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster
+    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster, WebsocketUpdate
 } from "./models";
 import {CookieJar, RequestResponse} from "request";
-import {error, log} from "util";
 import {LineupGenerator} from "./LineupGenerator";
+import * as util from "util";
 
 export default class Fanduel {
 
@@ -29,7 +29,7 @@ export default class Fanduel {
     private lastLoginAt : Date;
 
     private ws : WebSocket;
-    private websocketListeners : ((message : string) => void)[] = [];
+    private websocketListeners : ((message : WebsocketUpdate) => void)[] = [];
 
     constructor(config : FanduelConfig){
         this.config = config;
@@ -409,8 +409,10 @@ export default class Fanduel {
     }
 
     private onWebsocketMessage(data : any) {
-        const parsedData = JSON.parse(data);
-        console.log(parsedData);
+        const parsedData : WebsocketUpdate[] = JSON.parse(data);
+        this.websocketListeners.forEach(f => {
+           f.call(null, parsedData[0]);
+        });
     }
 
     private onWebsocketOpen() {
@@ -421,7 +423,7 @@ export default class Fanduel {
         this.ws.send( JSON.stringify(startMsg) );
     }
 
-    public subscribeToWebsocket(fn : (message : string) => void) : void {
+    public subscribeToWebsocket(fn : (message : WebsocketUpdate) => void) : void {
         if(!this.ws){
             this.initWebSocket();
         }

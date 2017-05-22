@@ -410,3 +410,59 @@ export class UpcomingRoster {
 export interface ILineup {
     roster : LineupPlayerPosition[];
 }
+
+export class WebsocketUpdate {
+    id : number;
+    target : string;
+    type : string;
+    data : WebsocketUpdateData;
+}
+
+export class WebsocketUpdateData {
+    lastUpdate : number;
+    lastRemove : number;
+    additions : WebsocketAdditionDetail[];
+    modifications : WebsocketModificationDetail[];
+}
+
+export class WebsocketAdditionDetail {
+    uniqueId : string;
+    gameId : string;
+    dateCreated : number;
+    contestType : string;
+    subContestType : string;
+    entryHTML : string;
+    tab : string;
+    sport : string;
+    cap : number;
+    startTime : number;
+    startString : string;
+    title : string;
+    tableSpecId : number;
+    entryFee : number;
+    entryFeeFormatted : string;
+    prizes : number;
+    prizeBreakdown : boolean;
+    prizeSummary : string;
+    size : string;
+    maxEntriesPerUser : number;
+    flags : any;
+    seatCode : string;
+    entriesData : string[];
+    stack : number;
+    entryURL : string;
+    displayPriority : string;
+    dateUpdated : number;
+}
+
+export class WebsocketModificationDetail {
+    uniqueId : string;
+    entriesData : string;
+    entryFee : number;
+    entryHTML : string;
+    entryURL : string;
+    prizes : number;
+    startString : string;
+    size : number;
+    displayPriority : number;
+}

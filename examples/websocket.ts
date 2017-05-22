@@ -9,5 +9,6 @@ const auth = JSON.parse(fs.readFileSync(dirname(__filename) + "/../auth.json", "
 const fd : Fanduel = new Fanduel(<FanduelConfig> auth);
 
 fd.subscribeToWebsocket((data) => {
-
+    const targetAdditions = _.filter(data.data.additions, f => f.entryFee < 5 && f.contestType == "H2H");
+    
 });
