@@ -152,7 +152,7 @@ describe("lineups", () => {
         });
     });
 
-    it("update my roster", () => {
+    xit("update my roster", () => {
         const df = Q.defer<boolean>();
 
         const slatesDf = fd.getAvailableSlates();
@@ -188,6 +188,28 @@ describe("lineups", () => {
 
         })
         .catch(e => console.log(e));
+
+        return df.promise;
+    });
+
+    it("delete my upcoming", () => {
+        const df = Q.defer<boolean>();
+
+        fd.getUpcomingRosters().then(result => {
+            if(result.rosters.length == 0){
+                console.error("No upcoming rosters so can't test edit.");
+                expect(false).to.equal(false);
+                return df.resolve(true);
+            }
+
+            fd.getEntriesForRoster(result.rosters[0]).then(entries => {
+                fd.cancelEntryForContest(entries[0]).then(() => {
+                    expect(true).to.equal(true);
+                    return df.resolve(true);
+                });
+            });
+
+        });
 
         return df.promise;
     });

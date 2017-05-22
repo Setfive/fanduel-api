@@ -355,8 +355,14 @@ export class LineupPlayerPosition {
     player : Player;
 }
 
+export class Prize {
+    summary : string;
+    total : number;
+}
+
 export class ContestEntry {
     id : string;
+    prizes? : Prize;
     _url : string;
 }
 

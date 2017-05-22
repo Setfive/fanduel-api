@@ -177,6 +177,36 @@ export default class Fanduel {
         return df.promise;
     }
 
+    public cancelEntryForContest(contestEntry : ContestEntry) : Q.Promise<boolean> {
+        const url = "https://api.fanduel.com/entries/" + contestEntry.id + "/cancel";
+        const df = Q.defer<boolean>();
+
+        const options = _.extend({}, this.defaultOptions, {method: "POST"});
+        this.makeRawRequest(url, options).then(result => { df.resolve(true); });
+
+        return df.promise;
+    }
+
+    public getEntriesForRoster(upcomingRoster : UpcomingRosterRoster) : Q.Promise<ContestEntry[]> {
+        const url = "https://api.fanduel.com/users/2965977/grouped-entries?page=1&page_size=250&roster=" + upcomingRoster.id;
+        const df = Q.defer<ContestEntry[]>();
+
+        const options = _.extend({}, this.defaultOptions, {method: "GET"});
+        this.makeRequest(url, options).then(result => {
+            const entries = (<any[]> result.grouped_entries).map(f => {
+                const e = new ContestEntry();
+                e.id = f["entries"]["ids"][0];
+                e._url = f["entries"]["_url"];
+                e.prizes = f["entries"]["prizes"];
+                return e;
+            });
+
+            df.resolve(entries);
+        });
+
+        return df.promise;
+    }
+
     private rosterRequest(slate : Slate, contestId : string, lineup : ILineup, isUpdate : boolean) : Q.Promise<ContestEntry[]> {
 
         let url = "";
