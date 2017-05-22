@@ -2,7 +2,7 @@
   "name": "ts-fd-api",
   "version": "1.0.0",
   "description": "Provides a nodejs interface to Fanduel.com",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --timeout 60000 -r ts-node/register test/*.ts"
   },
