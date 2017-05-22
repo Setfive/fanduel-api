@@ -1,8 +1,12 @@
 ## Unofficial Fanduel API
 
-Have you ever wanted programmatic access to Fanduel.com? Maybe to automatically import player data into your daily fantasy sports model. Or automatically contests that match a set of criteria. Well now you can.
+Have you ever wanted programmatic access to Fanduel.com? 
+Maybe to automatically import player data into your daily fantasy sports model. 
+Or automatically contests that match a set of criteria. Well now you can.
 
-This is a TypeScript library which allows you to access the REST endpoints that Fanduel.com itself uses. The library enables you to perform all the core functionality of Fanduel programmatically.
+This is a TypeScript library which allows you to access the REST 
+endpoints that Fanduel.com itself uses. The library enables you to perform 
+all the core functionality of Fanduel programmatically.
 
 Note: This is definitely against the Fanduel ToS so be careful what account you use it with. 
 
@@ -27,12 +31,28 @@ fd.getAvailableSlates().then(slates => {
 
 Replacing the placeholders with your Fanduel credentials.
 
+Run it, and you'll see the currently available slates output to your console.
+
+Pretty cool huh?
+
 ## Examples
 
 Check out the examples/ folder for sample code around what can be done with this library.
 
+## Things to note
+
+In no particular order:
+
+* As noted above, using this is explicitly against the Fanduel ToS. You have been warned (twice).
+* I created TypeScript classes to mirror the data that comes back from Fanduel.
+
 ## Development
 
-This is written in TypeScript so you'll definitely need TypeScript (http://www.typescriptlang.org/index.html#download-links) installed. If you want to run TypeScript without compiling it you'll also need ts-node (https://github.com/TypeStrong/ts-node). I'd recommend ts-node since it tightens the development feedback loop.
+This is written in TypeScript so you'll definitely 
+need TypeScript (http://www.typescriptlang.org/index.html#download-links) installed. 
+If you want to run TypeScript without compiling it you'll 
+also need ts-node (https://github.com/TypeStrong/ts-node). 
+I'd recommend ts-node since it tightens the development feedback loop.
 
-To build the JavaScript, just run "tsc" in the root folder and it'll use the tsconfig.json settings to build the files in dist/
+To build the JavaScript, just run "tsc" in the root folder 
+and it'll use the tsconfig.json settings to build the files in dist/
