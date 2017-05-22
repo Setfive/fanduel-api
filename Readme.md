@@ -37,14 +37,20 @@ Pretty cool huh?
 
 ## Examples
 
-Check out the examples/ folder for sample code around what can be done with this library.
+Check out the [https://github.com/Setfive/fanduel-api/tree/master/examples](https://github.com/Setfive/fanduel-api/tree/master/examples) 
+folder for sample code around what can be done with this library.
 
 ## Things to note
 
 In no particular order:
 
 * As noted above, using this is explicitly against the Fanduel ToS. You have been warned (twice).
-* I created TypeScript classes to mirror the data that comes back from Fanduel.
+* I created TypeScript classes to mirror the data that comes back from Fanduel. Those are in [https://github.com/Setfive/fanduel-api/blob/master/models.ts](https://github.com/Setfive/fanduel-api/blob/master/models.ts)
+* I tried to use those types to make it clear how library's code can be stitched together.
+* Fanduel uses a Websocket to power the "Lobby", it streams back updates which your browser normally parses into the UI.
+* [https://github.com/Setfive/fanduel-api/blob/master/examples/websocket.ts](https://github.com/Setfive/fanduel-api/blob/master/examples/websocket.ts) has an example for how you can listen in on that
+* [https://github.com/Setfive/fanduel-api/blob/master/LineupGenerator.ts](https://github.com/Setfive/fanduel-api/blob/master/LineupGenerator.ts) is a very naivete line up generator which performs a brute force search looking for a line up with the highest projected Fanduel points.  
+
 
 ## Development
 
