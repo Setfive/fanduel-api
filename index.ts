@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as _ from "lodash";
 import * as request from "request";
 import * as Q from "q";
+import * as WebSocket from "ws";
 import {
     FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
     Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster
@@ -22,9 +23,13 @@ export default class Fanduel {
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
         }
     };
+
     private userInfo : UserInfo = new UserInfo();
     private hasAuthentication : boolean = false;
     private lastLoginAt : Date;
+
+    private ws : WebSocket;
+    private websocketListeners : ((message : string) => void)[] = [];
 
     constructor(config : FanduelConfig){
         this.config = config;
@@ -395,6 +400,33 @@ export default class Fanduel {
             });
         ;
         return result.promise;
+    }
+
+    private initWebSocket() : void {
+        this.ws = new WebSocket('wss://websockets.fanduel.com/websocket');
+        this.ws.on('open', this.onWebsocketOpen.bind(this));
+        this.ws.on('message', this.onWebsocketMessage.bind(this));
+    }
+
+    private onWebsocketMessage(data : any) {
+        const parsedData = JSON.parse(data);
+        console.log(parsedData);
+    }
+
+    private onWebsocketOpen() {
+        const d = new Date();
+        const t = d.getTime() - (60000 * 5);
+        const startMsg = [{"type":"sub","target":"lobby","lastUpdate":t,"lastRemove":t}];
+
+        this.ws.send( JSON.stringify(startMsg) );
+    }
+
+    public subscribeToWebsocket(fn : (message : string) => void) : void {
+        if(!this.ws){
+            this.initWebSocket();
+        }
+
+        this.websocketListeners.push(fn);
     }
 
     private debug(msg : string) {

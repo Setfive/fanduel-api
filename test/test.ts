@@ -192,7 +192,7 @@ describe("lineups", () => {
         return df.promise;
     });
 
-    it("delete my upcoming", () => {
+    xit("delete my upcoming", () => {
         const df = Q.defer<boolean>();
 
         fd.getUpcomingRosters().then(result => {
