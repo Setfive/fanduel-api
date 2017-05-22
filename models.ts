@@ -379,10 +379,18 @@ export class UpcomingRosterRoster {
     last_used : string;
     fixture_list : Fixture;
     lineup_share_url : string;
-    lineup : Lineup;
+    lineup : UpcomingRosterLineupPlayer[];
     score : number;
     _url : string;
     ppr : number;
+}
+
+export class UpcomingRosterLineupPlayer {
+    player_position : string;
+    player : Player;
+    status : any;
+    position : string;
+    salary : number;
 }
 
 export class UpcomingRoster {
@@ -391,4 +399,8 @@ export class UpcomingRoster {
     fixtures : SlateGame[];
     fixture_lists : Slate[];
     teams : RosterTeam[];
+}
+
+export interface ILineup {
+    roster : LineupPlayerPosition[];
 }

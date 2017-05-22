@@ -4,7 +4,7 @@ import * as request from "request";
 import * as Q from "q";
 import {
     FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
-    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster
+    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster
 } from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {error, log} from "util";
@@ -43,23 +43,23 @@ export default class Fanduel {
         return result.promise;
     }
 
-    public getDetailsForSlateId(slate : Slate) : Q.Promise<SlateDetails> {
+    public getDetailsForSlateId(id : string) : Q.Promise<SlateDetails> {
         const result : Q.Deferred<SlateDetails> = Q.defer<SlateDetails>();
 
-        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slate.id)
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + id)
             .then(requestResult => {
                 const intermediateDetails : any = _.extend(requestResult.fixture_lists[0], {games: requestResult.fixtures});
                 intermediateDetails.games = (<any[]> intermediateDetails.games).map(f => {
-                   f.away_team = {team: f["away_team"]["team"]["_members"][0],
-                                  score: f["away_team"]["score"],
-                                  sport_specific: f["away_team"]["sport_specific"]};
+                    f.away_team = {team: f["away_team"]["team"]["_members"][0],
+                        score: f["away_team"]["score"],
+                        sport_specific: f["away_team"]["sport_specific"]};
 
                     f.home_team = {team: f["home_team"]["team"]["_members"][0],
-                                   score: f["home_team"]["score"],
-                                   sport_specific: f["home_team"]["sport_specific"]};
+                        score: f["home_team"]["score"],
+                        sport_specific: f["home_team"]["sport_specific"]};
 
 
-                   return f;
+                    return f;
                 });
 
                 result.resolve(<SlateDetails> intermediateDetails);
@@ -68,6 +68,10 @@ export default class Fanduel {
         ;
 
         return result.promise;
+    }
+
+    public getDetailsForSlate(slate : Slate) : Q.Promise<SlateDetails> {
+        return this.getDetailsForSlateId(slate.id);
     }
 
     public getAvailableSlates() : Q.Promise<Slate[]> {
@@ -119,10 +123,10 @@ export default class Fanduel {
         return result.promise;
     }
 
-    public getPlayersForSlate(slate : Slate) : Q.Promise<Player[]> {
+    public getPlayersForSlateId(id : string) : Q.Promise<Player[]> {
         const result : Q.Deferred<Player[]> = Q.defer<Player[]>();
 
-        this.makeRequest("https://api.fanduel.com/fixture-lists/" + slate.id + "/players")
+        this.makeRequest("https://api.fanduel.com/fixture-lists/" + id + "/players")
             .then(requestResult => {
                 result.resolve(<Player[]> requestResult.players);
             })
@@ -132,10 +136,14 @@ export default class Fanduel {
         return result.promise;
     }
 
+    public getPlayersForSlate(slate : Slate) : Q.Promise<Player[]> {
+        return this.getPlayersForSlateId(slate.id);
+    }
+
     public createValidLineupForSlate(slate : Slate) : Q.Promise<Lineup> {
         const finalLineupDf : Q.Deferred<Lineup> = Q.defer<Lineup>();
         const players = this.getPlayersForSlate(slate);
-        const slateDetails = this.getDetailsForSlateId(slate);
+        const slateDetails = this.getDetailsForSlate(slate);
 
         Q.all([slateDetails, players]).then((result) => {
             const generator = new LineupGenerator(result[0], result[1]);
@@ -147,11 +155,29 @@ export default class Fanduel {
         return finalLineupDf.promise;
     }
 
-    public createEntryForContest(slate : Slate, contest : Contest, lineup : Lineup) : Q.Promise<ContestEntry[]> {
+    public createEntryForContest(slate : Slate, contest : Contest, lineup : ILineup) : Q.Promise<ContestEntry[]> {
         return this.rosterRequest(slate, contest.id, lineup, false);
     }
 
-    private rosterRequest(slate : Slate, contestId : string, lineup : Lineup, isUpdate : boolean) : Q.Promise<ContestEntry[]> {
+    public updateEntryForContest(upcomingRoster : UpcomingRosterRoster, lineup : ILineup) : Q.Promise<boolean> {
+        const roster = lineup.roster.map(f => { return {position: f.position, player: {id: f.player.id}};});
+        const requestBody = {
+            rosters: [{lineup: roster}]
+        };
+
+        const url = "https://api.fanduel.com/users/" + this.userInfo.id + "/rosters/" + upcomingRoster.id + "/transfer-entries";
+        const body = JSON.stringify(requestBody);
+        const options = _.extend({}, this.defaultOptions, {method: "POST", body: body});
+        options.headers["Content-Type"] = "application/json;charset=utf-8";
+
+        const df = Q.defer<boolean>();
+
+        this.makeRequest(url, options).then(result => { df.resolve(true); });
+
+        return df.promise;
+    }
+
+    private rosterRequest(slate : Slate, contestId : string, lineup : ILineup, isUpdate : boolean) : Q.Promise<ContestEntry[]> {
 
         let url = "";
         let method = "";

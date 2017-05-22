@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import {FanduelConfig, Lineup, Sport, UpcomingRoster} from "../models";
+import {FanduelConfig, Lineup, Slate, Sport, UpcomingRoster} from "../models";
 import Fanduel from "../index";
 import { expect } from 'chai';
 import {dirname} from "path";
@@ -47,7 +47,7 @@ describe("info", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
-           fd.getDetailsForSlateId(result[0])
+           fd.getDetailsForSlate(result[0])
              .then(slateDetails => {
                  expect(slateDetails).to.be.any;
                  df.resolve(true);
@@ -146,10 +146,50 @@ describe("lineups", () => {
         return df.promise;
     });
 
-    it("list my upcoming", () => {
+    xit("list my upcoming", () => {
         return fd.getUpcomingRosters().then(result => {
             expect(result).to.be.instanceof(UpcomingRoster);
         });
+    });
+
+    it("update my roster", () => {
+        const df = Q.defer<boolean>();
+
+        const slatesDf = fd.getAvailableSlates();
+        const myRostersDf = fd.getUpcomingRosters();
+
+        Q.all([slatesDf, myRostersDf]).then(results => {
+            if(results[1].rosters.length == 0){
+                console.error("No upcoming rosters so can't test edit.");
+                expect(false).to.equal(false);
+                return df.resolve(true);
+            }
+
+            const targetRoster = results[1].rosters[0];
+            const splitIds : string[] = targetRoster.id.split("-");
+            const slate = _.find(results[0], f => f.id == splitIds[0]);
+
+            fd.getPlayersForSlate(slate).then(players => {
+                const targetRosterSpot = targetRoster.lineup[0];
+                const playerToReplace = _.find(players, f => f.id == targetRosterSpot.player.id);
+                const otherPlayer = _.find(players, f => f.id != playerToReplace.id && f.position == playerToReplace.position && f.salary <= playerToReplace.salary);
+
+                targetRoster.lineup[0].player = otherPlayer;
+
+                fd.updateEntryForContest(targetRoster, {roster: targetRoster.lineup})
+                  .then(result => {
+                      expect(true).to.equal(true);
+                      df.resolve(result);
+                })
+                  .catch(e => console.log(e));
+
+            })
+            .catch(e => console.log(e));
+
+        })
+        .catch(e => console.log(e));
+
+        return df.promise;
     });
 
 });
