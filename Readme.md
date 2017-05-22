@@ -34,3 +34,5 @@ Check out the examples/ folder for sample code around what can be done with this
 ## Development
 
 This is written in TypeScript so you'll definitely need TypeScript (http://www.typescriptlang.org/index.html#download-links) installed. If you want to run TypeScript without compiling it you'll also need ts-node (https://github.com/TypeStrong/ts-node). I'd recommend ts-node since it tightens the development feedback loop.
+
+To build the JavaScript, just run "tsc" in the root folder and it'll use the tsconfig.json settings to build the files in dist/
