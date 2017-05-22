@@ -16,14 +16,14 @@ before(() => {
 
 describe("auth", () => {
 
-    xit("valid credentials", () => {
+    it("valid credentials", () => {
         const fd = new Fanduel(<FanduelConfig> auth);
         return fd.login().then(result => {
            expect(result).to.equal(true, "Auth succeeded!");
         });
     });
 
-    xit("invalid credentials", () => {
+    it("invalid credentials", () => {
         auth.password = "badpassword";
         const fd = new Fanduel(<FanduelConfig> auth);
         return fd.login()
@@ -37,13 +37,13 @@ describe("auth", () => {
 
 describe("info", () => {
 
-    xit("slates", () => {
+    it("slates", () => {
         return fd.getAvailableSlates().then(result => {
            expect(result).to.be.instanceof(Array);
         });
     });
 
-    xit("slate details", () => {
+    it("slate details", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -62,7 +62,7 @@ describe("info", () => {
         return df.promise;
     });
 
-    xit("slate contests", () => {
+    it("slate contests", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -80,7 +80,7 @@ describe("info", () => {
         return df.promise;
     });
 
-    xit("players for slate", () => {
+    it("players for slate", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -92,7 +92,7 @@ describe("info", () => {
         return df.promise;
     });
 
-    xit("games for slate", () => {
+    it("games for slate", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -108,7 +108,7 @@ describe("info", () => {
 
 describe("lineups", () => {
 
-    xit("generate valid lineup", () => {
+    it("generate valid lineup", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -121,7 +121,7 @@ describe("lineups", () => {
         return df.promise;
     });
 
-    xit("enter contest", () => {
+    it("enter contest", () => {
         const df = Q.defer<boolean>();
 
         fd.getAvailableSlates().then(result => {
@@ -146,13 +146,13 @@ describe("lineups", () => {
         return df.promise;
     });
 
-    xit("list my upcoming", () => {
+    it("list my upcoming", () => {
         return fd.getUpcomingRosters().then(result => {
             expect(result).to.be.instanceof(UpcomingRoster);
         });
     });
 
-    xit("update my roster", () => {
+    it("update my roster", () => {
         const df = Q.defer<boolean>();
 
         const slatesDf = fd.getAvailableSlates();
@@ -192,7 +192,7 @@ describe("lineups", () => {
         return df.promise;
     });
 
-    xit("delete my upcoming", () => {
+    it("delete my upcoming", () => {
         const df = Q.defer<boolean>();
 
         fd.getUpcomingRosters().then(result => {

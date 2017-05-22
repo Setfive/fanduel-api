@@ -10,5 +10,5 @@ const fd : Fanduel = new Fanduel(<FanduelConfig> auth);
 
 fd.subscribeToWebsocket((data) => {
     const targetAdditions = _.filter(data.data.additions, f => f.entryFee < 5 && f.contestType == "H2H");
-    
+    console.log("# target additions: " + targetAdditions.length);
 });
