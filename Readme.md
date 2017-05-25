@@ -69,7 +69,7 @@ and it'll use the tsconfig.json settings to build the files in dist/
 ## Documentation
 
 There really isn't any. But there are auto generated doxygen style class definitions at
-[https://github.com/Setfive/fanduel-api/blob/master/docs/index.html](https://github.com/Setfive/fanduel-api/blob/master/docs/index.html)
+[http://htmlpreview.github.io/?https://github.com/Setfive/fanduel-api/blob/master/docs/index.html](https://github.com/Setfive/fanduel-api/blob/master/docs/index.html)
 
 Those were generated with [http://typedoc.org/](TypeDoc) by running:
 ```
