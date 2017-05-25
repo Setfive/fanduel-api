@@ -90,8 +90,17 @@ export class SlateGameStatus {
     top_bottom : string;
 }
 
+export class Team {
+    id : number;
+    code : string;
+    name : string;
+    city : string;
+    full_name : string;
+    colors : string[];
+}
+
 export class SlateGameTeam {
-    team : string;
+    team : Team;
     sport_specific : any;
     score : string;
 }

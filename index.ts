@@ -5,7 +5,8 @@ import * as Q from "q";
 import * as WebSocket from "ws";
 import {
     FanduelConfig, IDefaultOptions, Slate, SlateDetails, UserInfo, Contest, ContestResult, Sport,
-    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster, WebsocketUpdate
+    Player, SlateGame, Lineup, Fixture, ContestEntry, UpcomingRoster, ILineup, UpcomingRosterRoster, WebsocketUpdate,
+    Team
 } from "./models";
 import {CookieJar, RequestResponse} from "request";
 import {LineupGenerator} from "./LineupGenerator";
@@ -53,15 +54,19 @@ export default class Fanduel {
 
         this.makeRequest("https://api.fanduel.com/fixture-lists/" + id)
             .then(requestResult => {
+                const teams = <Team[]> requestResult.teams;
                 const intermediateDetails : any = _.extend(requestResult.fixture_lists[0], {games: requestResult.fixtures});
-                intermediateDetails.games = (<any[]> intermediateDetails.games).map(f => {
-                    f.away_team = {team: f["away_team"]["team"]["_members"][0],
-                        score: f["away_team"]["score"],
-                        sport_specific: f["away_team"]["sport_specific"]};
 
-                    f.home_team = {team: f["home_team"]["team"]["_members"][0],
-                        score: f["home_team"]["score"],
-                        sport_specific: f["home_team"]["sport_specific"]};
+                intermediateDetails.games = (<any[]> intermediateDetails.games).map(f => {
+                    const awayTeam : Team = _.find(teams, t => t.id == f["away_team"]["team"]["_members"][0]);
+                    f.away_team = {team: awayTeam,
+                                   score: f["away_team"]["score"],
+                                   sport_specific: f["away_team"]["sport_specific"]};
+
+                    const homeTeam : Team = _.find(teams, t => t.id == f["home_team"]["team"]["_members"][0]);
+                    f.home_team = {team: homeTeam,
+                                   score: f["home_team"]["score"],
+                                   sport_specific: f["home_team"]["sport_specific"]};
 
 
                     return f;
@@ -145,14 +150,14 @@ export default class Fanduel {
         return this.getPlayersForSlateId(slate.id);
     }
 
-    public createValidLineupForSlate(slate : Slate) : Q.Promise<Lineup> {
+    public createValidLineupForSlate(slate : Slate, timeout : number = 10000) : Q.Promise<Lineup> {
         const finalLineupDf : Q.Deferred<Lineup> = Q.defer<Lineup>();
         const players = this.getPlayersForSlate(slate);
         const slateDetails = this.getDetailsForSlate(slate);
 
         Q.all([slateDetails, players]).then((result) => {
             const generator = new LineupGenerator(result[0], result[1]);
-            generator.createValidLineup().then(lineupResult => {
+            generator.createValidLineup(timeout).then(lineupResult => {
                 finalLineupDf.resolve(lineupResult);
             });
         });
