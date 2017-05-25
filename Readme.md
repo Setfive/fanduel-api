@@ -10,6 +10,9 @@ all the core functionality of Fanduel programmatically.
 
 Note: This is definitely against the Fanduel ToS so be careful what account you use it with. 
 
+## Demo
+![](https://raw.githubusercontent.com/Setfive/fanduel-api/master/demo.gif)
+
 ## Getting Started
 
 * First, check out the repository somewhere
