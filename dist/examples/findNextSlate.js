@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path_1 = require("path");
-const index_1 = require("../index");
+const Fanduel_1 = require("../Fanduel");
 const _ = require("lodash");
 const moment = require("moment");
 /**
@@ -10,7 +10,7 @@ const moment = require("moment");
  *
  */
 const auth = JSON.parse(fs.readFileSync(path_1.dirname(__filename) + "/../auth.json", "utf8"));
-const fd = new index_1.default(auth);
+const fd = new Fanduel_1.default(auth);
 fd.getAvailableSlates().then(slates => {
     const sorted = _.sortBy(slates, f => {
         const sd = moment(f.start_date);

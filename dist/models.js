@@ -33,6 +33,9 @@ exports.SlateDetails = SlateDetails;
 class SlateGameStatus {
 }
 exports.SlateGameStatus = SlateGameStatus;
+class Team {
+}
+exports.Team = Team;
 class SlateGameTeam {
 }
 exports.SlateGameTeam = SlateGameTeam;

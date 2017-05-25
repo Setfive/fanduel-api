@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const models_1 = require("../models");
-const index_1 = require("../index");
+const Fanduel_1 = require("../Fanduel");
 const chai_1 = require("chai");
 const path_1 = require("path");
 const Q = require("q");
@@ -10,18 +10,18 @@ const _ = require("lodash");
 const auth = JSON.parse(fs.readFileSync(path_1.dirname(__filename) + "/../auth.json", "utf8"));
 let fd;
 before(() => {
-    fd = new index_1.default(auth);
+    fd = new Fanduel_1.default(auth);
 });
 describe("auth", () => {
     it("valid credentials", () => {
-        const fd = new index_1.default(auth);
+        const fd = new Fanduel_1.default(auth);
         return fd.login().then(result => {
             chai_1.expect(result).to.equal(true, "Auth succeeded!");
         });
     });
     it("invalid credentials", () => {
         auth.password = "badpassword";
-        const fd = new index_1.default(auth);
+        const fd = new Fanduel_1.default(auth);
         return fd.login()
             .then()
             .catch(result => {

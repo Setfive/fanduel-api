@@ -21,7 +21,7 @@ Note: This is definitely against the Fanduel ToS so be careful what account you 
 ```
 "use strict";
 
-const Fanduel = require("./fd-api").default;
+const Fanduel = require("./fanduel-api").default;
 const auth = {username: "your fanduel userame", password: "your fanduel password"};
 
 const fd = new Fanduel(auth);
@@ -65,3 +65,15 @@ I'd recommend ts-node since it tightens the development feedback loop.
 
 To build the JavaScript, just run "tsc" in the root folder 
 and it'll use the tsconfig.json settings to build the files in dist/
+
+## Documentation
+
+There really isn't any. But there are auto generated doxygen style class definitions at
+[https://github.com/Setfive/fanduel-api/blob/master/docs/index.html](https://github.com/Setfive/fanduel-api/blob/master/docs/index.html)
+
+Those were generated with [http://typedoc.org/](TypeDoc) by running:
+```
+typedoc --out docs/ --target ES5 --exclude tests/ index.ts models.ts LineupGenerator.ts
+```
+
+From the root of the project.

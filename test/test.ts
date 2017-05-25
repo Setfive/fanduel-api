@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import {FanduelConfig, Lineup, Slate, Sport, UpcomingRoster} from "../models";
-import Fanduel from "../index";
+import Fanduel from "../Fanduel";
 import { expect } from 'chai';
 import {dirname} from "path";
 import * as Q from "q";

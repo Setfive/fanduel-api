@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import {dirname} from "path";
-import Fanduel from "../index";
+import Fanduel from "../Fanduel";
 import * as Q from "q";
 import * as _ from "lodash";
 import {FanduelConfig} from "../models";

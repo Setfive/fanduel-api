@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as _ from "lodash";
 import {dirname} from "path";
-import Fanduel from "../index";
+import Fanduel from "../Fanduel";
 import {Slate} from "../models";
 
 const auth = JSON.parse(fs.readFileSync("../auth.json", "utf8"));

@@ -1,0 +1,233 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ts-fd-api</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">ts-fd-api</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> ts-fd-api</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h2 id="unofficial-fanduel-api">Unofficial Fanduel API</h2>
+				<p>Have you ever wanted programmatic access to Fanduel.com?
+					Maybe to automatically import player data into your daily fantasy sports model.
+				Or automatically contests that match a set of criteria. Well now you can.</p>
+				<p>This is a TypeScript library which allows you to access the REST
+					endpoints that Fanduel.com itself uses. The library enables you to perform
+				all the core functionality of Fanduel programmatically.</p>
+				<p>Note: This is definitely against the Fanduel ToS so be careful what account you use it with. </p>
+				<h2 id="demo">Demo</h2>
+				<p><img src="https://raw.githubusercontent.com/Setfive/fanduel-api/master/demo.gif" alt=""></p>
+				<h2 id="getting-started">Getting Started</h2>
+				<ul>
+					<li>First, check out the repository somewhere</li>
+					<li>Then you should be able to create a nodejs script containing:</li>
+				</ul>
+				<pre><code><span class="hljs-meta">"use strict"</span>;
+
+<span class="hljs-keyword">const</span> Fanduel = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./fanduel-api"</span>).default;
+<span class="hljs-keyword">const</span> auth = {<span class="hljs-attr">username</span>: <span class="hljs-string">"your fanduel userame"</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">"your fanduel password"</span>};
+
+<span class="hljs-keyword">const</span> fd = <span class="hljs-keyword">new</span> Fanduel(auth);
+
+fd.getAvailableSlates().then(<span class="hljs-function"><span class="hljs-params">slates</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(slates);
+    process.exit(<span class="hljs-number">0</span>);
+});
+</code></pre><p>Replacing the placeholders with your Fanduel credentials.</p>
+				<p>Run it, and you&#39;ll see the currently available slates output to your console.</p>
+				<p>Pretty cool huh?</p>
+				<h2 id="examples">Examples</h2>
+				<p>Check out the <a href="https://github.com/Setfive/fanduel-api/tree/master/examples">https://github.com/Setfive/fanduel-api/tree/master/examples</a>
+				folder for sample code around what can be done with this library.</p>
+				<h2 id="things-to-note">Things to note</h2>
+				<p>In no particular order:</p>
+				<ul>
+					<li>As noted above, using this is explicitly against the Fanduel ToS. You have been warned (twice).</li>
+					<li>I created TypeScript classes to mirror the data that comes back from Fanduel. Those are in <a href="https://github.com/Setfive/fanduel-api/blob/master/models.ts">https://github.com/Setfive/fanduel-api/blob/master/models.ts</a></li>
+					<li>I tried to use those types to make it clear how library&#39;s code can be stitched together.</li>
+					<li>Fanduel uses a Websocket to power the &quot;Lobby&quot;, it streams back updates which your browser normally parses into the UI.</li>
+					<li><a href="https://github.com/Setfive/fanduel-api/blob/master/examples/websocket.ts">https://github.com/Setfive/fanduel-api/blob/master/examples/websocket.ts</a> has an example for how you can listen in on that</li>
+					<li><a href="https://github.com/Setfive/fanduel-api/blob/master/LineupGenerator.ts">https://github.com/Setfive/fanduel-api/blob/master/LineupGenerator.ts</a> is a very naivete line up generator which performs a brute force search looking for a line up with the highest projected Fanduel points.  </li>
+					<li>And no, unfortunately I haven&#39;t used this to build a bot to mint money on Fanduel...yet ;)</li>
+				</ul>
+				<h2 id="development">Development</h2>
+				<p>This is written in TypeScript so you&#39;ll definitely
+					need TypeScript (<a href="http://www.typescriptlang.org/index.html#download-links">http://www.typescriptlang.org/index.html#download-links</a>) installed.
+					If you want to run TypeScript without compiling it you&#39;ll
+					also need ts-node (<a href="https://github.com/TypeStrong/ts-node">https://github.com/TypeStrong/ts-node</a>).
+				I&#39;d recommend ts-node since it tightens the development feedback loop.</p>
+				<p>To build the JavaScript, just run &quot;tsc&quot; in the root folder
+				and it&#39;ll use the tsconfig.json settings to build the files in dist/</p>
+				<h2 id="documentation">Documentation</h2>
+				<p>There really isn&#39;t any. But there are auto generated doxygen style class definitions at
+				<a href="https://github.com/Setfive/fanduel-api/blob/master/docs/index.html">https://github.com/Setfive/fanduel-api/blob/master/docs/index.html</a></p>
+				<p>Those were generated with <a href="TypeDoc">http://typedoc.org/</a> by running:
+				```</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_fanduel_.html">"<wbr>Fanduel"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_lineupgenerator_.html">"<wbr>Lineup<wbr>Generator"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_examples_findnextslate_.html">"examples/find<wbr>Next<wbr>Slate"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_examples_generatelineup_.html">"examples/generate<wbr>Lineup"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_examples_playerstats_.html">"examples/player<wbr>Stats"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_examples_repldemo_.html">"examples/repl<wbr>Demo"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_examples_websocket_.html">"examples/websocket"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_models_.html">"models"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_test_test_.html">"test/test"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
