@@ -12,6 +12,8 @@ import {CookieJar, RequestResponse} from "request";
 import {LineupGenerator} from "./LineupGenerator";
 import * as util from "util";
 
+// (<any> request).debug = true;
+
 export default class Fanduel {
 
     private config : FanduelConfig;
@@ -253,18 +255,23 @@ export default class Fanduel {
         const result : Q.Deferred<boolean> = Q.defer<boolean>();
 
         xAuthCookie = xAuthCookie.split(";")[0].replace("X-Auth-Token=", "");
+
         this.defaultOptions.headers["X-Auth-Token"] = xAuthCookie;
+        this.debug("Got xAuthToken = " + xAuthCookie);
+
         this.hasAuthentication = true;
         this.lastLoginAt = new Date();
 
-        this.debug("Got xAuthToken = " + xAuthCookie);
-
         setTimeout(() => {this.hasAuthentication = false;}, 3600 * 1000);
 
+        /*
         this.loadUserData()
             .then(() => { result.resolve(true); })
             .catch((err : any) => { result.reject(err); })
         ;
+        */
+
+        result.resolve(true);
 
         return result.promise;
     }
@@ -280,12 +287,6 @@ export default class Fanduel {
             let phpSessionId = _.find(response.headers["set-cookie"], (v : string) => v.indexOf("PHPSESSID") > -1);
             const xAuthCookie = _.find(response.headers["set-cookie"], (v : string) => v.indexOf("X-Auth-Token") > -1);
 
-            if (xAuthCookie) {
-                return this.processXAuthToken(xAuthCookie)
-                          .then((xAuthResult) => result.resolve(xAuthResult))
-                          .catch((xAuthResult) => result.reject(xAuthResult));
-            }
-
             if(phpSessionId){
                 phpSessionId = phpSessionId.split(";")[0].replace("PHPSESSID=", "");
             }else{
@@ -300,26 +301,28 @@ export default class Fanduel {
                 email: this.config.username,
                 password: this.config.password,
                 checkbox_remember: "1",
-                login: "Log in to your account"
+                login: "Log in to your account",
             };
 
-            const opt = _.extend({method: "POST"}, this.defaultOptions, {
+            const opt : any  = _.extend({method: "POST"}, this.defaultOptions, {
                 url: "https://www.fanduel.com/c/CCAuth",
-                formData: formData,
+                formData: formData
             });
 
             this.debug(JSON.stringify(opt));
 
             request(opt, (error : any, response : RequestResponse, body : any) => {
-                const xAuthCookie = _.find(response.headers["set-cookie"], (v : string) => v.indexOf("X-Auth-Token") > -1);
-                if (xAuthCookie) {
-                    return this.processXAuthToken(xAuthCookie)
-                               .then((xAuthResult) => result.resolve(xAuthResult))
-                               .catch((xAuthResult) => result.reject(xAuthResult));
-                }else{
+
+                const matches = response.body.match( new RegExp("FanDuel\\.render\\((.+)\\)") );
+                const fanduelInfo : any = JSON.parse(matches[1]);
+
+                if(matches.length == 0){
                     this.hasAuthentication = false;
-                    result.reject("Couldn't login! Inavalid credentials?");
+                    return result.reject("Couldn't login! Inavalid credentials?");
                 }
+
+                this.defaultOptions.headers["Authorization"] = "Basic " + fanduelInfo.apiClientId;
+                result.resolve(true);
             });
 
         });
